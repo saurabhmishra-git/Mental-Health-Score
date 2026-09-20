@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Mental Health Score Predictor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Animated neural-network background -->
+  <div class="photo-layer" aria-hidden="true"></div>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+
+  <div class="page">
+
+    <header class="top">
+      <div class="top-text">
+        <h1>Student Mental Health Score Predictor</h1>
+        <p>Tell us about a student's daily habits and the model will estimate their mental health score.</p>
+      </div>
+      <div class="api-status" id="apiStatus" data-state="checking" role="status">
+        <span class="dot"></span>
+        <span id="apiStatusText">Checking API…</span>
+      </div>
+    </header>
+
+    <main class="layout">
+
+      <!-- ============ FORM ============ -->
+      <form id="predictForm" class="card form-card" novalidate>
+
+        <fieldset>
+          <legend>About the student</legend>
+
+          <div class="grid-2">
+            <div class="field" data-field="gender">
+              <span class="label" id="genderLabel">Gender</span>
+              <div class="pills" role="radiogroup" aria-labelledby="genderLabel">
+                <input type="radio" id="gender_male" name="gender" value="Male">
+                <label for="gender_male">Male</label>
+                <input type="radio" id="gender_female" name="gender" value="Female">
+                <label for="gender_female">Female</label>
+              </div>
+              <span class="error" data-error-for="gender"></span>
+            </div>
+
+            <div class="field" data-field="age">
+              <label class="label" for="age">Age</label>
+              <input type="number" id="age" name="age" min="10" max="100" step="1" placeholder="e.g. 20" inputmode="numeric">
+              <span class="error" data-error-for="age"></span>
+            </div>
+
+            <div class="field" data-field="country">
+              <label class="label" for="country">Country</label>
+              <input type="text" id="country" name="country" list="countryList" placeholder="Start typing…" autocomplete="off">
+              <datalist id="countryList"></datalist>
+              <span class="error" data-error-for="country"></span>
+            </div>
+
+            <div class="field" data-field="academic_level">
+              <label class="label" for="academic_level">Academic level</label>
+              <select id="academic_level" name="academic_level">
+                <option value="" selected disabled>Select level</option>
+                <option>High School</option>
+                <option>Undergraduate</option>
+                <option>Graduate</option>
+              </select>
+              <span class="error" data-error-for="academic_level"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Social media</legend>
+
+          <div class="grid-2">
+            <div class="field" data-field="most_used_platform">
+              <label class="label" for="most_used_platform">Most used platform</label>
+              <select id="most_used_platform" name="most_used_platform">
+                <option value="" selected disabled>Select platform</option>
+                <option>Instagram</option>
+                <option>Facebook</option>
+                <option>TikTok</option>
+                <option>YouTube</option>
+                <option>Snapchat</option>
+                <option>Twitter</option>
+                <option>LinkedIn</option>
+                <option>WhatsApp</option>
+                <option>WeChat</option>
+                <option>LINE</option>
+                <option>KakaoTalk</option>
+                <option>VKontakte</option>
+              </select>
+              <span class="error" data-error-for="most_used_platform"></span>
+            </div>
+
+            <div class="field" data-field="purpose_of_use">
+              <label class="label" for="purpose_of_use">Main purpose of use</label>
+              <select id="purpose_of_use" name="purpose_of_use">
+                <option value="" selected disabled>Select purpose</option>
+                <option>Entertainment</option>
+                <option>Education</option>
+                <option>Networking</option>
+                <option>News</option>
+              </select>
+              <span class="error" data-error-for="purpose_of_use"></span>
+            </div>
+
+            <div class="field field-wide" data-field="avg_daily_usage_hours">
+              <div class="range-head">
+                <label class="label" for="avg_daily_usage_hours">Average daily usage</label>
+                <output for="avg_daily_usage_hours"></output>
+              </div>
+              <input type="range" id="avg_daily_usage_hours" name="avg_daily_usage_hours" min="0" max="24" step="0.5" value="4">
+              <span class="error" data-error-for="avg_daily_usage_hours"></span>
+            </div>
+
+            <div class="field field-wide" data-field="daily_unlocks">
+              <label class="label" for="daily_unlocks">Phone unlocks per day</label>
+              <input type="number" id="daily_unlocks" name="daily_unlocks" min="0" step="1" placeholder="e.g. 60" inputmode="numeric">
+              <span class="error" data-error-for="daily_unlocks"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Daily routine</legend>
+
+          <div class="grid-2">
+            <div class="field" data-field="study_hours">
+              <div class="range-head">
+                <label class="label" for="study_hours">Study hours</label>
+                <output for="study_hours"></output>
+              </div>
+              <input type="range" id="study_hours" name="study_hours" min="0" max="24" step="0.5" value="3">
+              <span class="error" data-error-for="study_hours"></span>
+            </div>
+
+            <div class="field" data-field="physical_activity_hours">
+              <div class="range-head">
+                <label class="label" for="physical_activity_hours">Physical activity</label>
+                <output for="physical_activity_hours"></output>
+              </div>
+              <input type="range" id="physical_activity_hours" name="physical_activity_hours" min="0" max="24" step="0.5" value="1">
+              <span class="error" data-error-for="physical_activity_hours"></span>
+            </div>
+
+            <div class="field field-wide" data-field="sleep_hours_per_night">
+              <div class="range-head">
+                <label class="label" for="sleep_hours_per_night">Sleep per night</label>
+                <output for="sleep_hours_per_night"></output>
+              </div>
+              <input type="range" id="sleep_hours_per_night" name="sleep_hours_per_night" min="0" max="24" step="0.5" value="7">
+              <span class="error" data-error-for="sleep_hours_per_night"></span>
+            </div>
+
+            <div class="field field-wide" data-field="stress_level">
+              <span class="label" id="stressLabel">Stress level</span>
+              <div class="pills pills-4" role="radiogroup" aria-labelledby="stressLabel">
+                <input type="radio" id="stress_low" name="stress_level" value="Low">
+                <label for="stress_low" data-tone="low">Low</label>
+                <input type="radio" id="stress_medium" name="stress_level" value="Medium">
+                <label for="stress_medium" data-tone="medium">Medium</label>
+                <input type="radio" id="stress_high" name="stress_level" value="High">
+                <label for="stress_high" data-tone="high">High</label>
+                <input type="radio" id="stress_vhigh" name="stress_level" value="Very High">
+                <label for="stress_vhigh" data-tone="vhigh">Very high</label>
+              </div>
+              <span class="error" data-error-for="stress_level"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" class="btn-ghost" id="resetBtn">Clear form</button>
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span class="btn-text">Predict score</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- ============ RESULT ============ -->
+      <aside class="card result-card" id="resultCard" data-state="idle" aria-live="polite">
+
+        <h2>Predicted mental health score</h2>
+
+        <div class="gauge">
+          <svg viewBox="0 0 320 200" role="img" aria-label="Mental health score speedometer">
+            <defs>
+              <linearGradient id="gaugeGrad" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="280" y2="0">
+                <stop offset="0"    stop-color="#ff4d5e"/>
+                <stop offset="0.28" stop-color="#ff9a3c"/>
+                <stop offset="0.5"  stop-color="#ffd84a"/>
+                <stop offset="0.75" stop-color="#9be15d"/>
+                <stop offset="1"    stop-color="#2fe6a6"/>
+              </linearGradient>
+              <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- dim track -->
+            <path class="g-track" d="M 40 170 A 120 120 0 0 1 280 170" pathLength="100"/>
+            <!-- bright progress arc -->
+            <path id="gaugeArc" class="g-arc" d="M 40 170 A 120 120 0 0 1 280 170" pathLength="100" filter="url(#softGlow)"/>
+
+            <g id="gaugeTicks"></g>
+
+            <!-- needle -->
+            <g id="needle" class="needle">
+              <polygon points="156,170 164,170 160,58" />
+            </g>
+            <circle class="hub" cx="160" cy="170" r="11"/>
+            <circle class="hub-core" cx="160" cy="170" r="4"/>
+          </svg>
+        </div>
+
+        <!-- readout -->
+        <div class="readout">
+          <div class="score" id="scoreValue">–</div>
+          <div class="score-scale" id="scoreScale">out of 10</div>
+
+          <div data-show="idle">
+            <p class="hint">Fill in the form and press <strong>Predict score</strong> to see the result here.</p>
+          </div>
+
+          <div data-show="result">
+            <span class="verdict" id="verdict"></span>
+            <p class="tip" id="tip"></p>
+          </div>
+
+          <div data-show="error" class="error-panel" role="alert">
+            <strong id="errorTitle">Something went wrong</strong>
+            <p id="errorMessage"></p>
+            <ul id="errorList"></ul>
+            <button type="button" class="btn-ghost small" id="retryBtn">Try again</button>
+          </div>
+        </div>
+
+        <p class="disclaimer">
+          This is a statistical estimate from a machine-learning model, not a clinical assessment.
+          
+        </p>
+
+        <!-- loading overlay -->
+        <div class="loader" aria-hidden="true">
+          <div class="rings"><span></span><span></span><span></span></div>
+          <p>Analysing habits…</p>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="assertive"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
