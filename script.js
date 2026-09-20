@@ -6,7 +6,7 @@
 
 /* ---------------- Config (edit here) ---------------- */
 const CONFIG = {
-  API_BASE: 'http://127.0.0.1:8000', // your FastAPI server
+  API_BASE: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'http://127.0.0.1:8000',
   SCORE_MIN: 0,                      // gauge scale
   SCORE_MAX: 10,
   TIMEOUT_MS: 15000,                 // give up on the API after this long

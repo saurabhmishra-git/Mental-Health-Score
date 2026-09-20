@@ -2,6 +2,7 @@ import warnings
 from pathlib import Path
 import joblib
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import Literal
 import pandas as pd
@@ -65,8 +66,20 @@ class PredictionResponse(BaseModel):
 
 
 @app.get('/')
-def greet():
-    return {"message": "welcome to my blog"}
+def serve_home():
+    return FileResponse(BASE_DIR / 'index.html')
+
+@app.get('/style.css')
+def serve_css():
+    return FileResponse(BASE_DIR / 'style.css')
+
+@app.get('/script.js')
+def serve_js():
+    return FileResponse(BASE_DIR / 'script.js')
+
+@app.get('/health')
+def health_check():
+    return {"status": "ok", "message": "Mental Health Score Predictor API is online"}
 
 
 @app.post('/predict',response_model=PredictionResponse)
